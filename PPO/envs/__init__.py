@@ -3,7 +3,7 @@ from gym.envs.registration import register
 def initNabi():
     register(
         id='Nabi-v0',
-        entry_point='PPO.envs.mujoco:NabiEnv',#'''VERY IMPORTANT!!!!!''' for IMPORT
+        entry_point='PPO.envs.mujoco:naviEnv',#'''VERY IMPORTANT!!!!!''' for IMPORT
         max_episode_steps=1000,
         reward_threshold=6000.0,
         nondeterministic=True,
