@@ -18,6 +18,10 @@ from PPO.baselines.common.vec_env.vec_normalize import VecNormalize
 #NEED TO LOAD NABI ENV! HERE!
 from PPO.envs import initNabi
 
+initNabi()
+
+
+
 try:
     from mpi4py import MPI
 except ImportError:
@@ -55,6 +59,7 @@ _game_envs['retro'] = {
 
 
 def train(args, extra_args):
+
     env_type, env_id = get_env_type(args.env)
     print('env_type: {}'.format(env_type))
 
@@ -134,6 +139,8 @@ def get_env_type(env_id):
         assert env_type is not None, 'env_id {} is not recognized in env types'.format(env_id, _game_envs.keys())
 
     return env_type, env_id
+
+
 
 
 def get_default_network(env_type):
@@ -216,6 +223,8 @@ def main():
             actions, _, state, _ = model.step(obs,S=state, M=dones)
             obs, _, done, _ = env.step(actions)
             env.render()
+            # print('actions: ', actions)
+            # print('obs: ', obs)
             done = done.any() if isinstance(done, np.ndarray) else done
 
             if done:

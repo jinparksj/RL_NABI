@@ -35,30 +35,22 @@ class NabiEnv(MujocoEnv, utils.EzPickle):
         self.MAPPING = {0: [0, 1],
                         1: [2, 3]}
 
-        self.REST_POSE = np.array([0.0, 0.0, 0.0, 0.0])  # NEED TO DEFINE WITH ALEXIE
-
-        self.LEGS_UP = np.array([0.0, 0.0, 0.0, 0.0])  # NEED TO DEFINE WITH ALEXIE
-        self.COXA_LIMIT = (-1 / 3, 1 / 3)
+        self.REST_POSE = np.array([0.4, -0.4, -0.4, 0.4])  # NEED TO DEFINE WITH ALEXIE
+        #0: RIGHT HIP, 1: RIGHT KNEE, 2: LEFT HIP, 3: LEFT KNEE
+        # self.LEGS_UP = np.array([0.0, 0.0, 0.0, 0.0])  # NEED TO DEFINE WITH ALEXIE
+        self.HIP_LIMIT = (-1 / 3, 1 / 3)
         self.KNEE_LIMIT = (-1 / 2, 1 / 2)
-        self.COXA_INDEX = [0, 2]
+        self.HIP_INDEX = [0, 2]
         self.KNEE_INDEX = [1, 3]
 
-        self.legs = kwargs['legs']
-        self.act_dim = self.legs * 2
-
-        self.leg_indices = kwargs['leg_indices']
-        self.act_index, self.other_index = self.get_index()
-
-        self.obs_dim = kwargs['observation_dim']
-        self.input_dim = kwargs['policy_output_dim']
-
         self.move = self.REST_POSE.copy()[0:2]
+        self.advance(True)
         self.pos = self.REST_POSE.copy()
         self.reward = 0
 
-        xml_path = os.path.dirname(
-            os.path.abspath(__file__)) + '/envs/model/NABI-v0.xml'  # NEED TO MODIFY XML FILE NAME
-
+        # xml_path = os.path.dirname(
+        #     os.path.abspath(__file__)) + '/envs/model/past_NABI-v0.xml'  # NEED TO MODIFY XML FILE NAME
+        xml_path = '/home/jin/project/rlnabi/PPO/envs/model/past_NABI-v0.xml'
         MujocoEnv.__init__(self, xml_path, 5)  # frame skip : 5, Initialize self
         utils.EzPickle.__init__(self)
 
@@ -73,16 +65,29 @@ class NabiEnv(MujocoEnv, utils.EzPickle):
     #     :return:
     #     """
 
+    def feed_action(self, a):
+        self.pos[self.HIP_INDEX] = np.clip(self.pos[self.HIP_INDEX], self.HIP_LIMIT[0], self.HIP_LIMIT[1])
+        self.pos[self.KNEE_INDEX] = np.clip(self.pos[self.KNEE_INDEX], self.KNEE_LIMIT[0], self.KNEE_LIMIT[1])
+        return self.pos
+
+    def advance(self, done):
+        if done:
+            self.pos = self.REST_POSE.copy()
+        self.reward = 0.0
+
     def step(self, a):
-        xposbefore = self.get_body_com("torso")[0]
-        yposbefore = self.get_body_com("torso")[1]
-        zposbefore = self.get_body_com("torso")[2]
+        xposbefore = self.get_body_com("base_link")[0]
+        yposbefore = self.get_body_com("base_link")[1]
+        zposbefore = self.get_body_com("base_link")[2]
+
+        a = self.feed_action(a)
+        print(a)
 
         self.do_simulation(a, self.frame_skip)
 
-        xposafter = self.get_body_com("torso")[0]
-        yposafter = self.get_body_com("torso")[1]
-        zposafter = self.get_body_com("torso")[2]
+        xposafter = self.get_body_com("base_link")[0]
+        yposafter = self.get_body_com("base_link")[1]
+        zposafter = self.get_body_com("base_link")[2]
 
         forward_reward = (xposafter - xposbefore) / self.dt
 
@@ -97,6 +102,7 @@ class NabiEnv(MujocoEnv, utils.EzPickle):
         notdone = np.isfinite(state).all() and state[2] >= 0.2 and state[2] <= 1.0
         done = not notdone
         obs = self._get_obs()
+        self.advance(done)
         return obs, reward, done, dict(
             reward_forward=forward_reward,
             reward_ctrl = -ctrl_cost,
@@ -106,7 +112,7 @@ class NabiEnv(MujocoEnv, utils.EzPickle):
 
     def _get_obs(self):
         return np.concatenate([
-            self.sim.data.qpos.flat[2:],
+            self.sim.data.qpos.flat,
             self.sim.data.qvel.flat,
             np.clip(self.sim.data.cfrc_ext, -1, 1).flat
         ])
@@ -119,4 +125,6 @@ class NabiEnv(MujocoEnv, utils.EzPickle):
 
     def viewer_setup(self):
         self.viewer.cam.distance = self.model.stat.extent * 0.5
+
+
 

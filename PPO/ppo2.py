@@ -232,6 +232,13 @@ def learn(*, network, env, total_timesteps, eval_env = None, seed=None, nsteps=1
             vf_coef=0.5,  max_grad_norm=0.5, gamma=0.99, lam=0.95,
             log_interval=10, nminibatches=4, noptepochs=4, cliprange=0.2,
             save_interval=0, load_path=None, **network_kwargs):
+
+
+    '''
+    nsteps = nsteps, ent_coef = ent_coef, vf_coef = vf_coef,
+    max_grad_norm = max_grad_norm
+    '''
+
     '''
     Learn policy using PPO algorithm (https://arxiv.org/abs/1707.06347)
 
@@ -244,7 +251,7 @@ def learn(*, network, env, total_timesteps, eval_env = None, seed=None, nsteps=1
                                       neural nets, and extra_feed is a dictionary describing how to feed state into the network for recurrent neural nets.
                                       See common/models.py/lstm for more details on using recurrent nets in policies
 
-    env: baselines.common.vec_env.VecEnv     environment. Needs to be vectorized for parallel environment simulation.
+    env:  baselines.common.vec_env.VecEnv environment. Needs to be vectorized for parallel environment simulation.
                                       The environments produced by gym.make can be wrapped using baselines.common.vec_env.DummyVecEnv class.
 
 

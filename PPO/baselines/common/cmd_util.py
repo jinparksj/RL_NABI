@@ -14,8 +14,8 @@ from PPO.baselines import logger
 from PPO.baselines.bench import Monitor
 from PPO.baselines.common import set_global_seeds
 # from baselines.common.atari_wrappers import make_atari, wrap_deepmind
-from baselines.common.vec_env.subproc_vec_env import SubprocVecEnv
-from baselines.common.vec_env.dummy_vec_env import DummyVecEnv
+from PPO.baselines.common.vec_env.subproc_vec_env import SubprocVecEnv
+from PPO.baselines.common.vec_env.dummy_vec_env import DummyVecEnv
 # from baselines.common import retro_wrappers
 import os
 

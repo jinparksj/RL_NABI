@@ -1,0 +1,81 @@
+<mujoco model="000_NABI">
+    <compiler angle="radian" coordinate="local" inertiafromgeom="true" meshdir="meshes/" />
+    <option gravity="0 0 -9.81" integrator="RK4" timestep="0.02" o_solref="0.02 1.2" />
+    <option>
+        <flag override="enable" />
+    </option>
+
+    <size njmax="500" nconmax="100" />
+
+    <default>
+        <joint armature="1" limited="true"/>
+        <geom conaffinity="0" condim="3" density="1" friction="1.5 1.2 0" margin="0.01" rgba="0.8 0.6 0.4 1"/>
+    </default>
+
+    <asset>
+        <texture builtin="gradient" height="100" rgb1="1 1 1" rgb2="0 0 0" type="skybox" width="100"/>
+        <texture builtin="flat" height="1278" mark="cross" markrgb="1 1 1" name="texgeom" random="0.01" rgb1="0.8 0.6 0.4" rgb2="0.8 0.6 0.4" type="cube" width="127"/>
+        <texture builtin="checker" height="100" name="texplane" rgb1="0 0 0" rgb2="0.8 0.8 0.8" type="2d" width="100"/>
+        <material name="MatPlane" reflectance="0.5" shininess="1" specular="1" texrepeat="60 60" texture="texplane"/>
+        <material name="geom" texture="texgeom" texuniform="true"/>
+        <mesh name="base_link" file="base_link.STL" />
+        <mesh name="Right_Femur" file="Right_Femur.STL" />
+        <mesh name="Right_Tibia" file="Right_Tibia.STL" />
+        <mesh name="Right_Foot" file="Right_Foot.STL" />
+        <mesh name="Left_Femur" file="Left_Femur.STL" />
+        <mesh name="Left_Tibia" file="Left_Tibia.STL" />
+        <mesh name="Left_Foot" file="Left_Foot.STL" />
+    </asset>
+
+    <worldbody>
+        <light cutoff="100" diffuse="1 1 1" dir="-0 0 -1.3" directional="true" exponent="1" pos="0 0 1.3" specular=".1 .1 .1"/>
+        <geom conaffinity="1" condim="3" material="MatPlane" name="floor" pos="0 0 0" rgba="0.8 0.9 0.8 1" size="40 40 40" type="plane"/>
+
+        <body name="base_link" pos="0 0 0.8459">
+            <camera name="track" mode="trackcom" pos="0 -3 0.3" xyaxes="1 0 0 0 0 1"/>
+            <inertial pos="0.00027583 -4.69e-05 -0.00942057" quat="0.707017 0.707156 -0.00527789 0.00537538" mass="1.40983" diaginertia="0.00475204 0.00467702 0.00288471" />
+            <geom type="mesh" rgba="0.752941 0.752941 0.752941 1" mesh="base_link" />
+            <joint armature="0" damping="0" limited="false" margin="0.01" name="root" pos="0 0 0" type="free"/>
+
+            <body name="Right_Femur" pos="0 -0.05 -0.0558" quat="0.707105 0 0.707108 0">
+                <inertial pos="0.30242 -1.9612e-05 3.37e-06" quat="0.50001 0.500019 0.49999 0.499981" mass="0.49995" diaginertia="0.0080336 0.007724 0.00040953" />
+                <joint name="Right_Hip_Joint" pos="0 0 0" axis="0 0 1" range="-3.1415927 3.1415927" type="hinge"/>
+                <geom type="mesh" rgba="0.75294 0.75294 0.75294 1" mesh="Right_Femur" />
+
+                <body name="Right_Tibia" pos="0.39152 0 0">
+                    <inertial pos="0.21616 0 0" quat="0.500018 0.500018 0.499982 0.499982" mass="0.23236" diaginertia="0.0044393 0.0043773 0.00010871" />
+                    <joint name="Right_Knee_Joint" pos="0 0 0" axis="0 0 1" range="-3.1415927 3.1415927" type="hinge"/>
+                    <geom type="mesh" rgba="0.75294 0.75294 0.75294 1" mesh="Right_Tibia" />
+
+                    <body name="Right_Foot" pos="0.39857 0 0">
+                        <inertial pos="-0.011636 0 0" mass="0.10898" diaginertia="0.00089938 0.00089221 1.0016e-05" />
+                        <geom type="mesh" rgba="0.75294 0.75294 0.75294 1" mesh="Right_Foot" />
+                    </body>
+                </body>
+            </body>
+
+            <body name="Left_Femur" pos="0 0.05 -0.0558" quat="0.707105 0 0.707108 0">
+                <inertial pos="0.30242 -1.9612e-05 3.37e-06" quat="0.50001 0.500018 0.49999 0.499982" mass="0.49995" diaginertia="0.00547898 0.00547898 0.00547898" />
+                <joint name="Left_Hip_Joint" pos="0 0 0" axis="0 0 1" range="-3.1415927 3.1415927" type="hinge"/>
+                <geom type="mesh" rgba="0.75294 0.75294 0.75294 1" mesh="Left_Femur" />
+
+                <body name="Left_Tibia" pos="0.39152 0 0">
+                    <inertial pos="0.21616 0 0" quat="0.500018 0.500018 0.499982 0.499982" mass="0.23236" diaginertia="0.0044393 0.0043773 0.00010871" />
+                    <joint name="Left_Knee_Joint" pos="0 0 0" axis="0 0 1" range="-3.1415927 3.1415927" type="hinge"/>
+                    <geom type="mesh" rgba="0.75294 0.75294 0.75294 1" mesh="Left_Tibia" />
+
+                    <body name="Left_Foot" pos="0.39857 0 0">
+                        <inertial pos="-0.011636 0 0" mass="0.10898" diaginertia="0.00089938 0.00089221 1.0016e-05" />
+                        <geom type="mesh" rgba="0.75294 0.75294 0.75294 1" mesh="Left_Foot" />
+                    </body>
+                </body>
+            </body>
+        </body>
+    </worldbody>
+    <actuator>
+        <general ctrllimited="true" ctrlrange="-1 1" forcerange="-20.0 20.0" joint="Right_Hip_Joint" gear="1" gaintype="fixed" gainprm="600" biastype="affine" biasprm="1000 -20 -12"/>
+        <general ctrllimited="true" ctrlrange="-1 1" forcerange="-20.0 20.0" joint="Right_Knee_Joint" gear="1" gaintype="fixed" gainprm="500" biastype="affine" biasprm="-500 -20 -12"/>
+        <general ctrllimited="true" ctrlrange="-1 1" forcerange="-20.0 20.0" joint="Left_Hip_Joint" gear="1" gaintype="fixed" gainprm="600" biastype="affine" biasprm="1000 -20 -12"/>
+        <general ctrllimited="true" ctrlrange="-1 1" forcerange="-20.0 20.0" joint="Left_Knee_Joint" gear="1" gaintype="fixed" gainprm="500" biastype="affine" biasprm="-500 -20 -12"/>
+    </actuator>
+</mujoco>

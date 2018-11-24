@@ -118,7 +118,7 @@ class PolicyWithValue(object):
     def load(self, load_path):
         tf_util.load_state(load_path, sess=self.sess)
 
-def build_policy(env, policy_network, value_network=None,  normalize_observations=False, estimate_q=False, **policy_kwargs):
+def build_policy(env, policy_network, value_network=None, normalize_observations=False, estimate_q=False, **policy_kwargs):
     if isinstance(policy_network, str):
         network_type = policy_network
         policy_network = get_network_builder(network_type)(**policy_kwargs)
