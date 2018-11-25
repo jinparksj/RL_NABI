@@ -24,7 +24,7 @@ ALG = 'ppo2'
 SEED = None
 ENV = 'Nabi-v0'
 REWARD_SCALE = 1.0
-NETWORK = None #mlp, cnn, lstm, cnn_lstm, conv_only
+NETWORK = 'mlp' #mlp, cnn, lstm, cnn_lstm, conv_only
 NSTEPS = 1000
 NMINIBATCHES = 4
 ENT_COEF = 0.0
@@ -88,7 +88,7 @@ def simulate():
     '''
     model = Model(policy=policy, ob_space=ob_space, ac_space=ac_space, nbatch_act=nenvs, nbatch_train=nbatch_train, \
                   nsteps=NSTEPS, ent_coef=ENT_COEF, vf_coef=VF_COEF, max_grad_norm=MAX_GRAD_NORM)
-    load_path = 'data/test.pkl'
+    load_path = 'data/test2.pkl'
     model.load(load_path)
 
     obs = env.reset()
@@ -112,6 +112,7 @@ def build_env():
     seed = SEED
 
     env_type, env_id = get_env_type(ENV)
+    #env_type: 'mujoco', env_id:'Nabi-v0'
 
 
     config = tf.ConfigProto(allow_soft_placement=True,
@@ -122,9 +123,7 @@ def build_env():
     get_session(config=config)
 
     env = make_vec_env(env_id, env_type, NUM_ENV or 1, seed, reward_scale=REWARD_SCALE)
-
-    if env_type == 'mujoco':
-        env = VecNormalize(env)
+    env = VecNormalize(env)
 
     return env
 

@@ -1,15 +1,17 @@
 from gym.envs.registration import register
 
-def initNabi():
+def initNabi(policy = None):
     register(
         id='Nabi-v0',
         entry_point='PPO.envs.mujoco:NabiEnv',#'''VERY IMPORTANT!!!!!''' for IMPORT
         max_episode_steps=1000,
         reward_threshold=6000.0,
-        nondeterministic=True
-        # kwargs={'observation_dim': observation_dim, # 22
-        #         'policy_output_dim': policy_output_dim, # 4??
-        #         'legs': legs} #????
+        nondeterministic=True,
+        kwargs={'policy': policy}
+
+            # 'observation_dim': observation_dim, # 22
+            #      'policy_output_dim': policy_output_dim, # 4??
+            #      'legs': legs} #????
     )
     return None
 
