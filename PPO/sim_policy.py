@@ -88,7 +88,7 @@ def simulate():
     '''
     model = Model(policy=policy, ob_space=ob_space, ac_space=ac_space, nbatch_act=nenvs, nbatch_train=nbatch_train, \
                   nsteps=NSTEPS, ent_coef=ENT_COEF, vf_coef=VF_COEF, max_grad_norm=MAX_GRAD_NORM)
-    load_path = 'data/test2.pkl'
+    load_path = 'data/params_20181025_2M.pkl'
     model.load(load_path)
 
     obs = env.reset()
