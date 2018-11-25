@@ -35,6 +35,14 @@ NAVI Model
         Tibia: Same as Femur
             [-1/2 1/2]
 
+    length
+    ------
+
+    0.0558
+    0.39152
+    0.39857
+
+    0.05 + 0.05between right and left
 
 """
 
@@ -49,8 +57,8 @@ class NabiEnv(MujocoEnv, utils.EzPickle):
         # self.LEGS_UP = np.array([0.0, 0.0, 0.0, 0.0])  # NEED TO DEFINE WITH ALEXIE
         self.RIGHT_HIP_LIMIT = (0, 1/2)
         self.LEFT_HIP_LIMIT = (-1/2, 0)
-        self.RIGHT_KNEE_LIMIT = (-1/4, 1/4)
-        self.LEFT_KNEE_LIMIT = (-1/4, 1/4)
+        self.RIGHT_KNEE_LIMIT = (-1/2, 1/2)
+        self.LEFT_KNEE_LIMIT = (-1/2, 1/2)
 
         self.RIGHT_HIP_INDEX = 0
         self.RIGHT_KNEE_INDEX = 1
@@ -59,6 +67,9 @@ class NabiEnv(MujocoEnv, utils.EzPickle):
 
         self.KNEE_INDEX = [1, 3]
         self.HIP_INDEX = [0, 2]
+        self.len_Femur = 0.39152
+        self.len_Tibia = 0.39857
+        self.dist_btwn = 0.05
 
         self.move = self.REST_POSE.copy()[0:2]
         self.advance(True)
@@ -85,11 +96,39 @@ class NabiEnv(MujocoEnv, utils.EzPickle):
     #     """
 
     def feed_action(self, a):
+        for i in range(len(a)):
+            if (a[i] == float('NaN')):
+                a[i] = 0
+            if a[i] == float('Inf'):
+                if i == self.RIGHT_HIP_INDEX:
+                    a[i] = self.RIGHT_HIP_LIMIT[1]
+                if i == self.LEFT_HIP_INDEX:
+                    a[i] = self.LEFT_HIP_LIMIT[1]
+                if i == self.RIGHT_KNEE_INDEX:
+                    a[i] = self.RIGHT_KNEE_LIMIT[1]
+                if i == self.LEFT_KNEE_INDEX:
+                    a[i] = self.LEFT_KNEE_LIMIT[1]
+            if a[i] == -float('Inf'):
+                if i == self.RIGHT_HIP_INDEX:
+                    a[i] = self.RIGHT_HIP_LIMIT[0]
+                if i == self.LEFT_HIP_INDEX:
+                    a[i] = self.LEFT_HIP_LIMIT[0]
+                if i == self.RIGHT_KNEE_INDEX:
+                    a[i] = self.RIGHT_KNEE_LIMIT[0]
+                if i == self.LEFT_KNEE_INDEX:
+                    a[i] = self.LEFT_KNEE_LIMIT[0]
+
         self.pos = a
         self.pos[self.RIGHT_HIP_INDEX] = np.clip(self.pos[self.RIGHT_HIP_INDEX], self.RIGHT_HIP_LIMIT[0], self.RIGHT_HIP_LIMIT[1])
         self.pos[self.LEFT_HIP_INDEX] = np.clip(self.pos[self.LEFT_HIP_INDEX], self.LEFT_HIP_LIMIT[0], self.LEFT_HIP_LIMIT[1])
-        self.pos[self.RIGHT_KNEE_INDEX] = np.clip(self.pos[self.RIGHT_KNEE_INDEX], self.RIGHT_KNEE_LIMIT[0], self.RIGHT_KNEE_LIMIT[1])
-        self.pos[self.LEFT_KNEE_INDEX] = np.clip(self.pos[self.LEFT_KNEE_INDEX], self.LEFT_KNEE_LIMIT[0], self.LEFT_KNEE_LIMIT[1])
+
+        min_limit_right_knee = np.arcsin((self.dist_btwn + self.len_Femur * np.sin(self.pos[self.RIGHT_HIP_INDEX] * np.pi)) / \
+                  self.len_Tibia)
+        max_limit_left_knee = np.arcsin((self.dist_btwn + self.len_Femur * np.sin(self.pos[self.LEFT_HIP_INDEX] * np.pi)) / \
+                  self.len_Tibia)
+
+        self.pos[self.RIGHT_KNEE_INDEX] = np.clip(self.pos[self.RIGHT_KNEE_INDEX], -min_limit_right_knee, self.RIGHT_KNEE_LIMIT[1])
+        self.pos[self.LEFT_KNEE_INDEX] = np.clip(self.pos[self.LEFT_KNEE_INDEX], self.LEFT_KNEE_LIMIT[0], max_limit_left_knee)
         return self.pos
 
     def advance(self, done):
