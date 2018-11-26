@@ -52,11 +52,13 @@ class NabiEnv(MujocoEnv, utils.EzPickle):
         self.MAPPING = {0: [0, 1],
                         1: [2, 3]}
 
-        self.REST_POSE = np.array([1/4, -1/4, -1/8, 1/8])  # NEED TO DEFINE WITH ALEXIE
+        self.REST_POSE = np.array([-1/4, 1/8, 1/4, -1/8])  # NEED TO DEFINE WITH ALEXIE
         #0: RIGHT HIP, 1: RIGHT KNEE, 2: LEFT HIP, 3: LEFT KNEE
         # self.LEGS_UP = np.array([0.0, 0.0, 0.0, 0.0])  # NEED TO DEFINE WITH ALEXIE
-        self.RIGHT_HIP_LIMIT = (0, 1/2)
-        self.LEFT_HIP_LIMIT = (-1/2, 0)
+        # self.RIGHT_HIP_LIMIT = (0, 1/2)
+        # self.LEFT_HIP_LIMIT = (-1/2, 0)
+        self.RIGHT_HIP_LIMIT = (-1/2, 0)
+        self.LEFT_HIP_LIMIT = (0, 1/2)
         self.RIGHT_KNEE_LIMIT = (-1/2, 1/2)
         self.LEFT_KNEE_LIMIT = (-1/2, 1/2)
 
@@ -69,10 +71,8 @@ class NabiEnv(MujocoEnv, utils.EzPickle):
         self.HIP_INDEX = [0, 2]
         self.len_Femur = 0.39152
         self.len_Tibia = 0.39857
-        self.dist_btwn = 0.05
+        self.dist_btwn = 0.035
 
-        self.move = self.REST_POSE.copy()[0:2]
-        self.advance(True)
         self.pos = self.REST_POSE.copy()
         self.reward = 0
 
@@ -80,7 +80,7 @@ class NabiEnv(MujocoEnv, utils.EzPickle):
 
         # xml_path = os.path.dirname(
         #     os.path.abspath(__file__)) + '/envs/model/past_NABI-v0.xml'  # NEED TO MODIFY XML FILE NAME
-        xml_path = '/home/jin/project/rlnabi/PPO/envs/model/past_NABI-v0.xml'
+        xml_path = '/home/jin/project/rlnabi/PPO/envs/model/Nabi-v0.xml'
         MujocoEnv.__init__(self, xml_path, 5)  # frame skip : 5, Initialize self
         utils.EzPickle.__init__(self)
 
@@ -119,22 +119,57 @@ class NabiEnv(MujocoEnv, utils.EzPickle):
                     a[i] = self.LEFT_KNEE_LIMIT[0]
 
         self.pos = a
-        self.pos[self.RIGHT_HIP_INDEX] = np.clip(self.pos[self.RIGHT_HIP_INDEX], self.RIGHT_HIP_LIMIT[0], self.RIGHT_HIP_LIMIT[1])
-        self.pos[self.LEFT_HIP_INDEX] = np.clip(self.pos[self.LEFT_HIP_INDEX], self.LEFT_HIP_LIMIT[0], self.LEFT_HIP_LIMIT[1])
+        #1.
+        # self.pos[self.RIGHT_HIP_INDEX] = np.clip(self.pos[self.RIGHT_HIP_INDEX], self.RIGHT_HIP_LIMIT[0], self.RIGHT_HIP_LIMIT[1])
+        # self.pos[self.LEFT_HIP_INDEX] = np.clip(self.pos[self.LEFT_HIP_INDEX], self.LEFT_HIP_LIMIT[0], self.LEFT_HIP_LIMIT[1])
+        # angle_right_KNEE = np.clip((self.dist_btwn + self.len_Femur * np.sin(self.pos[self.RIGHT_HIP_INDEX] * np.pi)) / self.len_Tibia, \
+        #                            -1, 1)
+        # angle_left_KNEE = np.clip((self.dist_btwn + self.len_Femur * np.sin(self.pos[self.LEFT_HIP_INDEX] * np.pi)) / self.len_Tibia, \
+        #                           -1, 1)
+        #
+        # min_limit_right_knee = np.arcsin(angle_right_KNEE)
+        # max_limit_left_knee = np.arcsin(angle_left_KNEE)
+        #
+        # self.pos[self.RIGHT_KNEE_INDEX] = np.clip(self.pos[self.RIGHT_KNEE_INDEX], -min_limit_right_knee, self.RIGHT_KNEE_LIMIT[1])
+        # self.pos[self.LEFT_KNEE_INDEX] = np.clip(self.pos[self.LEFT_KNEE_INDEX], self.LEFT_KNEE_LIMIT[0], max_limit_left_knee)
 
-        min_limit_right_knee = np.arcsin((self.dist_btwn + self.len_Femur * np.sin(self.pos[self.RIGHT_HIP_INDEX] * np.pi)) / \
-                  self.len_Tibia)
-        max_limit_left_knee = np.arcsin((self.dist_btwn + self.len_Femur * np.sin(self.pos[self.LEFT_HIP_INDEX] * np.pi)) / \
-                  self.len_Tibia)
+        #2.
+        # self.pos[self.RIGHT_HIP_INDEX] = np.clip(self.pos[self.RIGHT_HIP_INDEX], self.RIGHT_HIP_LIMIT[0],
+        #                                          self.RIGHT_HIP_LIMIT[1])
+        # self.pos[self.LEFT_HIP_INDEX] = np.clip(self.pos[self.LEFT_HIP_INDEX], self.LEFT_HIP_LIMIT[0],
+        #                                         self.LEFT_HIP_LIMIT[1])
+        # angle_right_KNEE = np.clip(
+        #     (self.dist_btwn + self.len_Femur * np.sin(self.pos[self.RIGHT_HIP_INDEX] * np.pi)) / self.len_Tibia, \
+        #     -1, 1)
+        #
+        # angle_left_KNEE = np.clip(
+        #     (self.dist_btwn + self.len_Femur * np.sin(self.pos[self.LEFT_HIP_INDEX] * np.pi)) / self.len_Tibia, \
+        #     -1, 1)
+        #
+        # max_limit_right_knee = np.arcsin(angle_right_KNEE)
+        # min_limit_left_knee = np.arcsin(angle_left_KNEE)
+        #
+        # self.pos[self.RIGHT_KNEE_INDEX] = np.clip(self.pos[self.RIGHT_KNEE_INDEX], self.RIGHT_KNEE_LIMIT[0],
+        #                                           max_limit_right_knee)
+        # self.pos[self.LEFT_KNEE_INDEX] = np.clip(self.pos[self.LEFT_KNEE_INDEX], -min_limit_left_knee, self.LEFT_KNEE_LIMIT[1])
 
-        self.pos[self.RIGHT_KNEE_INDEX] = np.clip(self.pos[self.RIGHT_KNEE_INDEX], -min_limit_right_knee, self.RIGHT_KNEE_LIMIT[1])
-        self.pos[self.LEFT_KNEE_INDEX] = np.clip(self.pos[self.LEFT_KNEE_INDEX], self.LEFT_KNEE_LIMIT[0], max_limit_left_knee)
+
+        #3.
+        self.pos[self.RIGHT_HIP_INDEX] = np.clip(self.pos[self.RIGHT_HIP_INDEX], self.RIGHT_HIP_LIMIT[0],
+                                                 self.RIGHT_HIP_LIMIT[1])
+        self.pos[self.LEFT_HIP_INDEX] = np.clip(self.pos[self.LEFT_HIP_INDEX], self.LEFT_HIP_LIMIT[0],
+                                                self.LEFT_HIP_LIMIT[1])
+
+        self.pos[self.RIGHT_KNEE_INDEX] = np.clip(self.pos[self.RIGHT_KNEE_INDEX], self.RIGHT_KNEE_LIMIT[0],
+                                                  self.RIGHT_KNEE_LIMIT[1])
+        self.pos[self.LEFT_KNEE_INDEX] = np.clip(self.pos[self.LEFT_KNEE_INDEX], self.LEFT_KNEE_LIMIT[0],
+                                                 self.LEFT_KNEE_LIMIT[1])
+
         return self.pos
 
-    def advance(self, done):
-        if done:
-            self.pos = self.REST_POSE.copy()
-        self.reward = 0.0
+    def advance(self):
+        self.pos = self.REST_POSE.copy()
+        # self.reward = 0.0
 
     def step(self, a):
         xposbefore = self.get_body_com("base_link")[0]
@@ -162,7 +197,7 @@ class NabiEnv(MujocoEnv, utils.EzPickle):
         notdone = np.isfinite(state).all() and state[2] >= 0.2 and state[2] <= 1.0
         done = not notdone
         obs = self._get_obs()
-        self.advance(done)
+        self.advance()
         return obs, reward, done, dict(
             reward_forward=forward_reward,
             reward_ctrl = -ctrl_cost,
@@ -172,7 +207,7 @@ class NabiEnv(MujocoEnv, utils.EzPickle):
 
     def _get_obs(self):
         return np.concatenate([
-            self.sim.data.qpos.flat[2:], #self.sim.data.qpos.flat
+            self.sim.data.qpos.flat, #self.sim.data.qpos.flat
             self.sim.data.qvel.flat,
             np.clip(self.sim.data.cfrc_ext, -1, 1).flat
         ])

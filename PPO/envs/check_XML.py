@@ -6,8 +6,7 @@ import mujoco_py
 from mujoco_py import MjSimState
 from collections import namedtuple
 
-xml_path = os.path.dirname(
-    os.path.abspath(__file__)) + '/model/past_NABI-v0.xml'  # NEED TO MODIFY XML FILE NAME
+xml_path = os.path.dirname(os.path.abspath(__file__)) + '/model/Nabi-v0.xml'  # NEED TO MODIFY XML FILE NAME
 
 mj_path, _ = mujoco_py.utils.discover_mujoco()
 # xml_path = os.path.join(mj_path, 'model', 'humanoid.xml')
@@ -18,13 +17,13 @@ viewer = MjViewer(sim)
 modder = TextureModder(sim)
 
 t = 0
-a = [[100, 0, 0, 0, 0]]
-qpos = [0., 0., 0.8459, 1., 0., 0., 0., \
-         0.4, -0.2, -0.4, 0.2]
-
-qvel = [0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]
-
-state = MjSimState(qpos = qpos, time = 0.0, qvel = qvel, act = None, udd_state={})
+# a = [[100, 0, 0, 0, 0]]
+# qpos = [0., 0., 0.8459, 1., 0., 0., 0., \
+#          0.4, -0.2, -0.4, 0.2]
+#
+# qvel = [0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]
+actions = [[0, 0, 0, 0]]
+# state = MjSimState(qpos = qpos, time = 0.0, qvel = qvel, act = None, udd_state={})
 # sim.reset()
 
 while True:
