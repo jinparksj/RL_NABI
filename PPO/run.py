@@ -20,6 +20,11 @@ from PPO.envs import initNabi
 
 initNabi()
 
+'''
+--env=Nabi-v0 --num_timesteps=10000000 --save_path /home/jin/project/rlnabi/PPO/data/params_20181026_10M.pkl
+
+'''
+
 
 
 try:
