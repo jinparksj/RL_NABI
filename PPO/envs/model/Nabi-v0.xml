@@ -9,7 +9,7 @@
 
     <default>
         <joint armature="1" limited="true"/>
-        <geom conaffinity="0" condim="3" density="1" friction="1.5 1.2 0" margin="0.01" rgba="0.8 0.6 0.4 1"/>
+        <geom conaffinity="0" condim="3" density="1" friction="1.7 3 0" margin="0.01" rgba="0.8 0.6 0.4 1"/>
     </default>
 
     <asset>
@@ -79,3 +79,8 @@
         <general ctrllimited="true" ctrlrange="-1 1" forcelimited="true" forcerange="-20.0 20.0" joint="Left_Knee_Joint" gear="1" gaintype="fixed" gainprm="62.8" biastype="affine" biasprm="0 -20 -12"/>
     </actuator>
 </mujoco>
+
+
+<!--FRICTION, ACTUATOR, MATERIAL of FOOT, DAMPING and STIFFNESS of FOOT or ENV-->
+<!--1. MX-106 - Gear Ration = 225:1, G
+-->
