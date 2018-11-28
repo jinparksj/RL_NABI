@@ -57,10 +57,10 @@ class NabiEnv(MujocoEnv, utils.EzPickle):
         # self.LEGS_UP = np.array([0.0, 0.0, 0.0, 0.0])  # NEED TO DEFINE WITH ALEXIE
         # self.RIGHT_HIP_LIMIT = (0, 1/2)
         # self.LEFT_HIP_LIMIT = (-1/2, 0)
-        self.RIGHT_HIP_LIMIT = (-1/2, 0)
-        self.LEFT_HIP_LIMIT = (0, 1/2)
-        self.RIGHT_KNEE_LIMIT = (-1/2, 1/2)
-        self.LEFT_KNEE_LIMIT = (-1/2, 1/2)
+        self.RIGHT_HIP_LIMIT = (-1/3, -1/6) # -
+        self.LEFT_HIP_LIMIT = (1/6, 1/3) # +
+        self.RIGHT_KNEE_LIMIT = (0, 1/4) # +
+        self.LEFT_KNEE_LIMIT = (-1/4, 0) # -
 
         self.RIGHT_HIP_INDEX = 0
         self.RIGHT_KNEE_INDEX = 1
@@ -155,15 +155,22 @@ class NabiEnv(MujocoEnv, utils.EzPickle):
 
 
         #3.
-        self.pos[self.RIGHT_HIP_INDEX] = np.clip(self.pos[self.RIGHT_HIP_INDEX], self.RIGHT_HIP_LIMIT[0],
-                                                 self.RIGHT_HIP_LIMIT[1])
-        self.pos[self.LEFT_HIP_INDEX] = np.clip(self.pos[self.LEFT_HIP_INDEX], self.LEFT_HIP_LIMIT[0],
-                                                self.LEFT_HIP_LIMIT[1])
+        # self.pos[self.RIGHT_HIP_INDEX] = np.clip(self.pos[self.RIGHT_HIP_INDEX], self.RIGHT_HIP_LIMIT[0],
+        #                                          self.RIGHT_HIP_LIMIT[1])
+        # self.pos[self.LEFT_HIP_INDEX] = np.clip(self.pos[self.LEFT_HIP_INDEX], self.LEFT_HIP_LIMIT[0],
+        #                                         self.LEFT_HIP_LIMIT[1])
+        #
+        # self.pos[self.RIGHT_KNEE_INDEX] = np.clip(self.pos[self.RIGHT_KNEE_INDEX], self.RIGHT_KNEE_LIMIT[0],
+        #                                           self.RIGHT_KNEE_LIMIT[1])
+        # self.pos[self.LEFT_KNEE_INDEX] = np.clip(self.pos[self.LEFT_KNEE_INDEX], self.LEFT_KNEE_LIMIT[0],
+        #                                          self.LEFT_KNEE_LIMIT[1])
 
-        self.pos[self.RIGHT_KNEE_INDEX] = np.clip(self.pos[self.RIGHT_KNEE_INDEX], self.RIGHT_KNEE_LIMIT[0],
-                                                  self.RIGHT_KNEE_LIMIT[1])
-        self.pos[self.LEFT_KNEE_INDEX] = np.clip(self.pos[self.LEFT_KNEE_INDEX], self.LEFT_KNEE_LIMIT[0],
-                                                 self.LEFT_KNEE_LIMIT[1])
+        #4.
+        self.pos[self.RIGHT_HIP_INDEX] = np.clip(self.pos[self.RIGHT_HIP_INDEX], -1, 1)
+        self.pos[self.LEFT_HIP_INDEX] = np.clip(self.pos[self.LEFT_HIP_INDEX], -1, 1)
+
+        self.pos[self.RIGHT_KNEE_INDEX] = np.clip(self.pos[self.RIGHT_KNEE_INDEX], -1, 1)
+        self.pos[self.LEFT_KNEE_INDEX] = np.clip(self.pos[self.LEFT_KNEE_INDEX], -1, 1)
 
         return self.pos
 
@@ -185,11 +192,12 @@ class NabiEnv(MujocoEnv, utils.EzPickle):
         zposafter = self.get_body_com("base_link")[2]
 
         forward_reward = (xposafter - xposbefore) / self.dt
+        not_y_reward = (yposafter - yposbefore) / self.dt
 
         ctrl_cost = 0.5 * 1e-2 * np.square(a).sum()
         contact_cost = 0.5 * 1e-3 * np.sum(np.square(np.clip(self.sim.data.cfrc_ext, -1, 1)))
         survive_reward = 1.
-        reward = forward_reward - ctrl_cost - contact_cost + survive_reward
+        reward = forward_reward - ctrl_cost - contact_cost + survive_reward - not_y_reward
 
         self.reward = reward
 
