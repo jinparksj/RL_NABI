@@ -43,47 +43,50 @@
         <!--0.857526, 0.84589, xyaxes="1 0 0 0 0 1" -->
         <!--pi = 3.1415927, pi/3 = 1.0472, pi/6 = 0.5236, pi/4 = 0.7854, pi/2 = 1.5708, 75degree = 1.3090, 1degree=0.0174 ,-:RH, +:RK, +:LH, -:LK-->
         <!--0.5degree=0.0087, 20degree = 0.3491-->
-
-        <body name="base_link" pos="0 0 0.84589">
+        <!--For JUMP: RH - range="-1.5708 0", RK - range="0 0.7854", LH - range="0 1.5708", LK - "-0.7854 0"-->
+                <body name="base_link" pos="0 0 0.84589">
             <camera name="track" mode="trackcom" pos="0 -3 0.3" xyaxes="1 0 0 0 0 1"  />
             <inertial pos="0.00027583 -4.69e-05 -0.00942057" quat="0.707017 0.707156 -0.00527789 0.00537538" mass="1.40983" diaginertia="0.00475204 0.00467702 0.00288471" />
             <geom type="mesh" rgba="0.752941 0.752941 0.752941 1" mesh="base_link" friction="1 1 1"/>
-            <joint armature="0" damping="0" limited="false" margin="0.01" name="root" pos="0 0 0" type="free"/>
+            <joint armature="0" damping="0" limited="false" margin="0.01" name="root" pos="0 0 0" type="free" stiffness="5"/>
 
             <body name="Right_Femur" pos="0 -0.05 -0.0558" quat="0.707105 0 0.707108 0">
                 <inertial pos="0.30242 -1.9612e-05 3.37e-06" quat="0.50001 0.500019 0.49999 0.499981" mass="0.49995" diaginertia="0.0080336 0.007724 0.00040953" />
-                <joint name="Right_Hip_Joint" pos="0 0 0" axis="0 0 1" range="-1.3090 -0.5236" type="hinge" armature="0.01" />
+                <joint name="Right_Hip_Joint" pos="0 0 0" axis="0 0 1" range="-1.5708 0" type="hinge" armature="0.01" />
                 <joint name="Right_Hip_Joint_Backlash" pos="0 0 0" axis="0 0 1" limited="true" range="-0.0087 0.0087" type="hinge"/>
                 <geom type="mesh" rgba="0.75294 0.75294 0.75294 1" mesh="Right_Femur"/>
 
                 <body name="Right_Tibia" pos="0.39152 0 0">
                     <inertial pos="0.21616 0 0" quat="0.500018 0.500018 0.499982 0.499982" mass="0.23236" diaginertia="0.0044393 0.0043773 0.00010871" />
-                    <joint name="Right_Knee_Joint" pos="0 0 0" axis="0 0 1" range="0.3491 0.7854" type="hinge" armature="0.01"/>
+                    <joint name="Right_Knee_Joint" pos="0 0 0" axis="0 0 1" range="0 0.7854" type="hinge" armature="0.01"/>
                     <joint name="Right_Knee_Joint_Backlash" pos="0 0 0" axis="0 0 1" limited="true" range="-0.0087 0.0087" type="hinge"/>
                     <geom type="mesh" rgba="0.75294 0.75294 0.75294 1" mesh="Right_Tibia"/>
 
                     <body name="Right_Foot" pos="0.39857 0 0">
                         <inertial pos="-0.011636 0 0" mass="0.10898" diaginertia="0.00089938 0.00089221 1.0016e-05" />
                         <geom type="mesh" rgba="0.75294 0.75294 0.75294 1" mesh="Right_Foot" friction="1 1 1" />
+                        <joint name="Right_Foot_Spring" pos = "0 0 0" axis="1 0 0" type = "slide" stiffness="5" range="-0.01 0.01"/>
+
                     </body>
                 </body>
             </body>
 
             <body name="Left_Femur" pos="0 0.05 -0.0558" quat="0.707105 0 0.707108 0">
                 <inertial pos="0.30242 -1.9612e-05 3.37e-06" quat="0.50001 0.500018 0.49999 0.499982" mass="0.49995" diaginertia="0.00547898 0.00547898 0.00547898" />
-                <joint name="Left_Hip_Joint" pos="0 0 0" axis="0 0 1" range="0.5236 1.3090" type="hinge" armature="0.01"/>
+                <joint name="Left_Hip_Joint" pos="0 0 0" axis="0 0 1" range="0 1.5708" type="hinge" armature="0.01"/>
                 <joint name="Left_Hip_Joint_Backlash" pos="0 0 0" axis="0 0 1" limited="true" range="-0.0087 0.0087" type="hinge"/>
                 <geom type="mesh" rgba="0.75294 0.75294 0.75294 1" mesh="Left_Femur"/>
 
                 <body name="Left_Tibia" pos="0.39152 0 0">
                     <inertial pos="0.21616 0 0" quat="0.500018 0.500018 0.499982 0.499982" mass="0.23236" diaginertia="0.0044393 0.0043773 0.00010871" />
-                    <joint name="Left_Knee_Joint" pos="0 0 0" axis="0 0 1" range="-0.7854 -0.3491" type="hinge" armature="0.01"/>
+                    <joint name="Left_Knee_Joint" pos="0 0 0" axis="0 0 1" range="-0.7854 0" type="hinge" armature="0.01"/>
                     <joint name="Left_Knee_Joint_Backlash" pos="0 0 0" axis="0 0 1" limited="true" range="-0.0087 0.0087" type="hinge"/>
                     <geom type="mesh" rgba="0.75294 0.75294 0.75294 1" mesh="Left_Tibia"/>
 
                     <body name="Left_Foot" pos="0.39857 0 0">
                         <inertial pos="-0.011636 0 0" mass="0.10898" diaginertia="0.00089938 0.00089221 1.0016e-05" />
                         <geom type="mesh" rgba="0.75294 0.75294 0.75294 1" mesh="Left_Foot" friction="1 1 1"/>
+                        <joint name="Left_Foot_Spring" pos = "0 0 0" axis="1 0 0" type = "slide" stiffness="5" range="-0.01 0.01"/>
                     </body>
                 </body>
             </body>
@@ -99,6 +102,9 @@
         <general ctrllimited="true" ctrlrange="-1 1" forcelimited="true" forcerange="-0.1 0.1" joint="Right_Knee_Joint_Backlash" gear="1" gaintype="fixed" gainprm="0.5" biastype="affine" biasprm="0 0 -0.005"/>
         <general ctrllimited="true" ctrlrange="-1 1" forcelimited="true" forcerange="-0.1 0.1" joint="Left_Hip_Joint_Backlash" gear="1" gaintype="fixed" gainprm="0.5" biastype="affine" biasprm="0 0 -0.005"/>
         <general ctrllimited="true" ctrlrange="-1 1" forcelimited="true" forcerange="-0.1 0.1" joint="Left_Knee_Joint_Backlash" gear="1" gaintype="fixed" gainprm="0.5" biastype="affine" biasprm="0 0 -0.005"/>
+
+        <general ctrllimited="true" ctrlrange="-1 1" forcelimited="true" forcerange="-5 5" joint="Right_Foot_Spring" gear="1" gaintype="fixed" gainprm="5" biastype="affine" biasprm="0 0 -2"/>
+        <general ctrllimited="true" ctrlrange="-1 1" forcelimited="true" forcerange="-5 5" joint="Left_Foot_Spring" gear="1" gaintype="fixed" gainprm="5" biastype="affine" biasprm="0 0 -2"/>
 
 
     </actuator>

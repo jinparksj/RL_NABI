@@ -67,6 +67,12 @@ class NabiEnv(MujocoEnv, utils.EzPickle):
         self.LEFT_HIP_INDEX = 2
         self.LEFT_KNEE_INDEX = 3
 
+        self.RIGHT_HIP_BL_INDEX = 4
+        self.RIGHT_KNEE_BL_INDEX = 5
+        self.LEFT_HIP_BL_INDEX = 6
+        self.LEFT_KNEE_BL_INDEX = 7
+
+
         self.KNEE_INDEX = [1, 3]
         self.HIP_INDEX = [0, 2]
         self.len_Femur = 0.39152
@@ -75,13 +81,16 @@ class NabiEnv(MujocoEnv, utils.EzPickle):
 
         self.pos = self.REST_POSE.copy()
         self.reward = 0
+        self.numofmotor = 4
 
         self.policy = kwargs['policy']
 
         # xml_path = os.path.dirname(
         #     os.path.abspath(__file__)) + '/envs/model/past_NABI-v0.xml'  # NEED TO MODIFY XML FILE NAME
         xml_path = '/home/jin/project/rlnabi/PPO/envs/model/Nabi-v0.xml'
-        MujocoEnv.__init__(self, xml_path, 5)  # frame skip : 5, Initialize self
+        # xml_path = '/home/jin/project/rlnabi/PPO/envs/model/Nabi-v1_jump.xml'
+        frame_skip = 1
+        MujocoEnv.__init__(self, xml_path, frame_skip)  # frame skip : 5, Initialize self
         utils.EzPickle.__init__(self)
 
 
@@ -117,6 +126,8 @@ class NabiEnv(MujocoEnv, utils.EzPickle):
                     a[i] = self.RIGHT_KNEE_LIMIT[0]
                 if i == self.LEFT_KNEE_INDEX:
                     a[i] = self.LEFT_KNEE_LIMIT[0]
+
+        # Add noise for
 
         self.pos = a
         #1.
@@ -166,11 +177,18 @@ class NabiEnv(MujocoEnv, utils.EzPickle):
         #                                          self.LEFT_KNEE_LIMIT[1])
 
         #4.
+
         self.pos[self.RIGHT_HIP_INDEX] = np.clip(self.pos[self.RIGHT_HIP_INDEX], -1, 1)
         self.pos[self.LEFT_HIP_INDEX] = np.clip(self.pos[self.LEFT_HIP_INDEX], -1, 1)
 
         self.pos[self.RIGHT_KNEE_INDEX] = np.clip(self.pos[self.RIGHT_KNEE_INDEX], -1, 1)
         self.pos[self.LEFT_KNEE_INDEX] = np.clip(self.pos[self.LEFT_KNEE_INDEX], -1, 1)
+
+        self.pos[self.RIGHT_HIP_BL_INDEX] = np.clip(self.pos[self.RIGHT_HIP_BL_INDEX], -1, 1)
+        self.pos[self.LEFT_HIP_BL_INDEX] = np.clip(self.pos[self.LEFT_HIP_BL_INDEX], -1, 1)
+
+        self.pos[self.RIGHT_KNEE_BL_INDEX] = np.clip(self.pos[self.RIGHT_KNEE_BL_INDEX], -1, 1)
+        self.pos[self.LEFT_KNEE_BL_INDEX] = np.clip(self.pos[self.LEFT_KNEE_BL_INDEX], -1, 1)
 
         return self.pos
 
@@ -192,32 +210,42 @@ class NabiEnv(MujocoEnv, utils.EzPickle):
         zposafter = self.get_body_com("base_link")[2]
 
         forward_reward = (xposafter - xposbefore) / self.dt
-        not_y_reward = (yposafter - yposbefore) / self.dt
+        not_y_reward = 10 * (yposafter - yposbefore) / self.dt
+        not_x_reward = 10 * (xposafter - xposbefore) / self.dt
+        jump_reward = (zposafter - zposbefore) / self.dt
+        actuator_cost = abs(self.data.actuator_velocity[:self.LEFT_KNEE_INDEX+1]).sum()
+        # ctrl_cost = 0.5 * 1e-4 * np.square(a).sum()
 
-        ctrl_cost = 0.5 * 1e-2 * np.square(a).sum()
-        contact_cost = 0.5 * 1e-3 * np.sum(np.square(np.clip(self.sim.data.cfrc_ext, -1, 1)))
+        # contact_cost = 0.5 * 1e-5 * np.sum(np.square(np.clip(self.sim.data.cfrc_ext, -1, 1)))
+        # cfrc_ext: com-based external force on body         (nbody x 6)
+        # 3D rot; 3D tran, External torques and forces
+        weighting = 0.008
         survive_reward = 1.
-        reward = forward_reward - ctrl_cost - contact_cost + survive_reward - not_y_reward
-
+        # reward = forward_reward - ctrl_cost + survive_reward - 10 * not_y_reward - weighting * actuator_cost
+        reward = forward_reward + survive_reward - 10 * not_y_reward - weighting * actuator_cost
+        # reward = jump_reward - ctrl_cost + survive_reward - not_y_reward - not_x_reward
+        # reward = 10*jump_reward - ctrl_cost + survive_reward - not_y_reward - not_x_reward
         self.reward = reward
 
         state = self.state_vector()
-        notdone = np.isfinite(state).all() and state[2] >= 0.2 and state[2] <= 1.0
+
+        notdone = np.isfinite(state).all() and state[2] >= 0.2 and state[2] <= 1.0 #NEED TO FIX IT
         done = not notdone
         obs = self._get_obs()
         self.advance()
         return obs, reward, done, dict(
             reward_forward=forward_reward,
-            reward_ctrl = -ctrl_cost,
-            reward_contact = -contact_cost,
-            reward_survive = survive_reward
+            # reward_ctrl = -ctrl_cost,
+            reward_actuator = -actuator_cost,
+            # reward_contact = -contact_cost,
+            reward_survive = survive_reward,
+            reward_not_y_reward = -not_y_reward
         )
 
     def _get_obs(self):
         return np.concatenate([
-            self.sim.data.qpos.flat, #self.sim.data.qpos.flat
-            self.sim.data.qvel.flat,
-            np.clip(self.sim.data.cfrc_ext, -1, 1).flat
+            self.sim.data.qpos.flat[:12], #[:12] 3 + 4+ 10 = 17: torso of x, y, z / quaternion of torso / joint: 4 + 4 + 2
+            self.sim.data.qvel.flat[:11] #[:11] 3 + 3+ 10 = 16: torso vel of x, y, z / euler velocity of torso / joint: 4 + 4 + 2
         ])
 
     def reset_model(self):

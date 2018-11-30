@@ -101,6 +101,7 @@
         <general ctrllimited="true" ctrlrange="-1 1" forcelimited="true" forcerange="-0.1 0.1" joint="Left_Knee_Joint_Backlash" gear="1" gaintype="fixed" gainprm="0.5" biastype="affine" biasprm="0 0 -0.005"/>
 
 
+
     </actuator>
     <contact>
         <exclude body1="base_link" body2="Right_Femur" />

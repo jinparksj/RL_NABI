@@ -3,6 +3,8 @@ import numpy as np
 import tensorflow as tf
 from collections import deque
 
+#common.distributions -> use a2c.fc
+
 def sample(logits):
     noise = tf.random_uniform(tf.shape(logits))
     return tf.argmax(logits - tf.log(-tf.log(noise)), 1)

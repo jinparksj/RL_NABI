@@ -88,7 +88,7 @@ def simulate():
     '''
     model = Model(policy=policy, ob_space=ob_space, ac_space=ac_space, nbatch_act=nenvs, nbatch_train=nbatch_train, \
                   nsteps=NSTEPS, ent_coef=ENT_COEF, vf_coef=VF_COEF, max_grad_norm=MAX_GRAD_NORM)
-    load_path = 'data/params_20181026_1M.pkl'
+    load_path = 'data/params_20181129_1M_backlash.pkl'
     model.load(load_path)
 
     obs = env.reset()
@@ -97,7 +97,7 @@ def simulate():
     state, dones = initialize_placeholders() #**extra_args
     while True:
         actions, _, state, _ = model.step(obs,S=state, M=dones)
-        # actions=[[-0.5, 0.5, 0.5, -0.5]]
+        # actions=[[-0.5, 0.5, 0.5, -0.5, 0, 0, 0, 0]]
         obs, _, done, _ = env.step(actions)
         env.render()
         # print(obs[0, 7], obs[0, 8], obs[0, 9], obs[0, 10])
