@@ -219,10 +219,10 @@ class NabiEnv(MujocoEnv, utils.EzPickle):
         # contact_cost = 0.5 * 1e-5 * np.sum(np.square(np.clip(self.sim.data.cfrc_ext, -1, 1)))
         # cfrc_ext: com-based external force on body         (nbody x 6)
         # 3D rot; 3D tran, External torques and forces
-        weighting = 0.008
+        weighting = 0.0001
         survive_reward = 1.
         # reward = forward_reward - ctrl_cost + survive_reward - 10 * not_y_reward - weighting * actuator_cost
-        reward = forward_reward + survive_reward - 10 * not_y_reward - weighting * actuator_cost
+        reward = forward_reward + survive_reward - not_y_reward - weighting * actuator_cost
         # reward = jump_reward - ctrl_cost + survive_reward - not_y_reward - not_x_reward
         # reward = 10*jump_reward - ctrl_cost + survive_reward - not_y_reward - not_x_reward
         self.reward = reward
