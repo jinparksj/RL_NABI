@@ -231,7 +231,7 @@ class NabiEnv(MujocoEnv, utils.EzPickle):
 
         notdone = np.isfinite(state).all() and state[2] >= 0.2 and state[2] <= 1.0 #NEED TO FIX IT
         done = not notdone
-        obs = self._get_obs()
+        obs = self._get_obs() # NEED to Change JOINT + BACKLASH
         self.advance()
         return obs, reward, done, dict(
             reward_forward=forward_reward,
@@ -243,9 +243,23 @@ class NabiEnv(MujocoEnv, utils.EzPickle):
         )
 
     def _get_obs(self):
+        act_RH_pos = np.array(self.sim.data.qpos[7] + self.sim.data.qpos[11]).reshape(1, )
+        act_RK_pos = np.array(self.sim.data.qpos[8] + self.sim.data.qpos[12]).reshape(1, )
+        act_LH_pos = np.array(self.sim.data.qpos[9] + self.sim.data.qpos[13]).reshape(1, )
+        act_LK_pos = np.array(self.sim.data.qpos[10] + self.sim.data.qpos[14]).reshape(1, )
+
+        act_qpos = np.concatenate([self.sim.data.qpos.flat[:7], act_RH_pos, act_RK_pos, act_LH_pos, act_LK_pos])
+
+        act_RH_vel = np.array(self.sim.data.qvel[6] + self.sim.data.qvel[10]).reshape(1, )
+        act_RK_vel = np.array(self.sim.data.qvel[7] + self.sim.data.qvel[11]).reshape(1, )
+        act_LH_vel = np.array(self.sim.data.qvel[8] + self.sim.data.qvel[12]).reshape(1, )
+        act_LK_vel = np.array(self.sim.data.qvel[9] + self.sim.data.qvel[13]).reshape(1, )
+
+        act_qvel = np.concatenate([self.sim.data.qvel.flat[:6], act_RH_vel, act_RK_vel, act_LH_vel, act_LK_vel])
+
         return np.concatenate([
-            self.sim.data.qpos.flat[:11], #[:12] 3 + 4+ 10 = 17: torso of x, y, z / quaternion of torso / joint: 4 + 4 + 2
-            self.sim.data.qvel.flat[:10] #[:11] 3 + 3+ 10 = 16: torso vel of x, y, z / euler velocity of torso / joint: 4 + 4 + 2
+            act_qpos, #[:12] 3 + 4+ 10 = 17: torso of x, y, z / quaternion of torso / joint: 4 + 4 + 2
+            act_qvel #[:11] 3 + 3+ 10 = 16: torso vel of x, y, z / euler velocity of torso / joint: 4 + 4 + 2
         ])
 
     def reset_model(self):
