@@ -8,7 +8,7 @@
         <!--warmstart="enable" -->
     </option>
 
-    <size njmax="500" nconmax="100" nstack="300000"/>
+    <size njmax="500" ncdo you onmax="100" nstack="300000"/>
 
     <default>
         <joint limited="true"/>

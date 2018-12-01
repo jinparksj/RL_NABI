@@ -95,10 +95,10 @@
         <general ctrllimited="true" ctrlrange="-1 1" forcelimited="true" forcerange="-20 20" joint="Left_Hip_Joint" gear="1" gaintype="fixed" gainprm="5" biastype="affine" biasprm="0 0 -2"/>
         <general ctrllimited="true" ctrlrange="-1 1" forcelimited="true" forcerange="-20 20" joint="Left_Knee_Joint" gear="1" gaintype="fixed" gainprm="5" biastype="affine" biasprm="0 0 -2"/>
 
-        <general ctrllimited="true" ctrlrange="-1 1" forcelimited="true" forcerange="-0.1 0.1" joint="Right_Hip_Joint_Backlash" gear="1" gaintype="fixed" gainprm="0.5" biastype="affine" biasprm="0 0 -0.005"/>
-        <general ctrllimited="true" ctrlrange="-1 1" forcelimited="true" forcerange="-0.1 0.1" joint="Right_Knee_Joint_Backlash" gear="1" gaintype="fixed" gainprm="0.5" biastype="affine" biasprm="0 0 -0.005"/>
-        <general ctrllimited="true" ctrlrange="-1 1" forcelimited="true" forcerange="-0.1 0.1" joint="Left_Hip_Joint_Backlash" gear="1" gaintype="fixed" gainprm="0.5" biastype="affine" biasprm="0 0 -0.005"/>
-        <general ctrllimited="true" ctrlrange="-1 1" forcelimited="true" forcerange="-0.1 0.1" joint="Left_Knee_Joint_Backlash" gear="1" gaintype="fixed" gainprm="0.5" biastype="affine" biasprm="0 0 -0.005"/>
+        <general ctrllimited="true" ctrlrange="-1 1" forcelimited="true" forcerange="-0.0001 0.0001" joint="Right_Hip_Joint_Backlash" gear="1" gaintype="fixed" gainprm="0.5" biastype="affine" biasprm="0 0 -0.005"/>
+        <general ctrllimited="true" ctrlrange="-1 1" forcelimited="true" forcerange="-0.0001 0.0001" joint="Right_Knee_Joint_Backlash" gear="1" gaintype="fixed" gainprm="0.5" biastype="affine" biasprm="0 0 -0.005"/>
+        <general ctrllimited="true" ctrlrange="-1 1" forcelimited="true" forcerange="-0.0001 0.0001" joint="Left_Hip_Joint_Backlash" gear="1" gaintype="fixed" gainprm="0.5" biastype="affine" biasprm="0 0 -0.005"/>
+        <general ctrllimited="true" ctrlrange="-1 1" forcelimited="true" forcerange="-0.0001 0.0001" joint="Left_Knee_Joint_Backlash" gear="1" gaintype="fixed" gainprm="0.5" biastype="affine" biasprm="0 0 -0.005"/>
 
 
     </actuator>

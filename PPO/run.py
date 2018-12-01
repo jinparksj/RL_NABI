@@ -23,6 +23,7 @@ initNabi()
 '''
 --env=Nabi-v0 --num_timesteps=10000 --save_path /home/jin/project/rlnabi/PPO/data/params_20181126_10k.pkl
 --env=Nabi-v0 --num_timesteps=3000000 --save_path /home/jin/project/rlnabi/PPO/data/params_20181126_3M.pkl
+--num_env 8
 '''
 
 
