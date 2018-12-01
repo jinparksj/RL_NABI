@@ -244,8 +244,8 @@ class NabiEnv(MujocoEnv, utils.EzPickle):
 
     def _get_obs(self):
         return np.concatenate([
-            self.sim.data.qpos.flat[:12], #[:12] 3 + 4+ 10 = 17: torso of x, y, z / quaternion of torso / joint: 4 + 4 + 2
-            self.sim.data.qvel.flat[:11] #[:11] 3 + 3+ 10 = 16: torso vel of x, y, z / euler velocity of torso / joint: 4 + 4 + 2
+            self.sim.data.qpos.flat[:11], #[:12] 3 + 4+ 10 = 17: torso of x, y, z / quaternion of torso / joint: 4 + 4 + 2
+            self.sim.data.qvel.flat[:10] #[:11] 3 + 3+ 10 = 16: torso vel of x, y, z / euler velocity of torso / joint: 4 + 4 + 2
         ])
 
     def reset_model(self):
