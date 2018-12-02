@@ -88,7 +88,7 @@ class NabiEnv(MujocoEnv, utils.EzPickle):
 
         # xml_path = os.path.dirname(
         #     os.path.abspath(__file__)) + '/envs/model/past_NABI-v0.xml'  # NEED TO MODIFY XML FILE NAME
-        xml_path = '/home/jin/project/rlnabi/PPO/envs/model/Nabi-v0.xml'
+        xml_path = '/home/jin/project/rlnabi/PPO/envs/model/Nabi-v1.xml'
         # xml_path = '/home/jin/project/rlnabi/PPO/envs/model/Nabi-v1_jump.xml'
         frame_skip = 1
         MujocoEnv.__init__(self, xml_path, frame_skip)  # frame skip : 5, Initialize self
