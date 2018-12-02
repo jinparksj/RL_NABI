@@ -19,7 +19,7 @@ from PPO.envs.__init__ import initNabi
 initNabi()
 
 #args have num_env, alg, seed, env, reward_scale
-NUM_ENV = 0
+NUM_ENV = 1
 ALG = 'ppo2'
 SEED = None
 ENV = 'Nabi-v0'
@@ -88,7 +88,7 @@ def simulate():
     '''
     model = Model(policy=policy, ob_space=ob_space, ac_space=ac_space, nbatch_act=nenvs, nbatch_train=nbatch_train, \
                   nsteps=NSTEPS, ent_coef=ENT_COEF, vf_coef=VF_COEF, max_grad_norm=MAX_GRAD_NORM)
-    load_path = 'data/params_20181130_10M_backlash.pkl'
+    load_path = 'data/params_20181201_15M_backlash.pkl'
     model.load(load_path)
 
     obs = env.reset()

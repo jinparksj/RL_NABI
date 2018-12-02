@@ -220,8 +220,8 @@ class NabiEnv(MujocoEnv, utils.EzPickle):
         # contact_cost = 0.5 * 1e-5 * np.sum(np.square(np.clip(self.sim.data.cfrc_ext, -1, 1)))
         # cfrc_ext: com-based external force on body         (nbody x 6)
         # 3D rot; 3D tran, External torques and forces
-        weighting = 0.001
-        survive_reward = 1.
+        weighting = 0.0008
+        survive_reward = 5.
         # reward = forward_reward - ctrl_cost + survive_reward - 10 * not_y_reward - weighting * actuator_cost
         reward = forward_reward + survive_reward - not_y_reward - weighting * actuator_cost
         # reward = jump_reward - ctrl_cost + survive_reward - not_y_reward - not_x_reward
@@ -264,11 +264,11 @@ class NabiEnv(MujocoEnv, utils.EzPickle):
         ])
 
     def reset_model(self):
-        # qpos = self.init_qpos + self.np_random.uniform(size=self.model.nq, low=-.1, high=.1)
-        # qvel = self.init_qvel + self.np_random.randn(self.model.nv) * .1
+        qpos = self.init_qpos + self.np_random.uniform(size=self.model.nq, low=-.1, high=.1)
+        qvel = self.init_qvel + self.np_random.randn(self.model.nv) * .1
 
-        qpos = self.init_qpos
-        qvel = self.init_qvel
+        # qpos = self.init_qpos
+        # qvel = self.init_qvel
         self.set_state(qpos, qvel)
         return self._get_obs()
 
