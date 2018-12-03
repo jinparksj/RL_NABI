@@ -228,7 +228,7 @@ def constfn(val):
         return val
     return f
 
-def learn(*, network, env, total_timesteps, eval_env = None, seed=None, nsteps=5000, ent_coef=0.0, lr=3e-4,
+def learn(*, network, env, total_timesteps, eval_env = None, seed=None, nsteps=2000, ent_coef=0.0, lr=3e-4,
             vf_coef=0.5,  max_grad_norm=0.5, gamma=0.99, lam=0.95,
             log_interval=10, nminibatches=4, noptepochs=4, cliprange=0.2,
             save_interval=0, load_path=None, **network_kwargs):
@@ -393,6 +393,7 @@ def learn(*, network, env, total_timesteps, eval_env = None, seed=None, nsteps=5
         # Calculate the fps (frame per second)
         fps = int(nbatch / (tnow - tstart))
         csv = logger.make_output_format('csv', '/home/jin/project/rlnabi/PPO/csv', 1)
+        ave_return = returns.sum()/len(returns)
         if update % log_interval == 0 or update == 1:
             # Calculates if value function is a good predicator of the returns (ev > 1)
             # or if it's just worse than predicting nothing (ev =< 0)
@@ -408,6 +409,7 @@ def learn(*, network, env, total_timesteps, eval_env = None, seed=None, nsteps=5
                 logger.logkv('eval_eprewmean', safemean([epinfo['r'] for epinfo in eval_epinfobuf]) )
                 logger.logkv('eval_eplenmean', safemean([epinfo['l'] for epinfo in eval_epinfobuf]) )
             logger.logkv('time_elapsed', tnow - tfirststart)
+            logger.logkv('average_return', ave_return)
 
             for (lossval, lossname) in zip(lossvals, model.loss_names):
                 logger.logkv(lossname, lossval)

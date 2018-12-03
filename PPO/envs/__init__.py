@@ -4,7 +4,7 @@ def initNabi(policy = None):
     register(
         id='Nabi-v0',
         entry_point='PPO.envs.mujoco:NabiEnv',#'''VERY IMPORTANT!!!!!''' for IMPORT
-        max_episode_steps=5000,
+        max_episode_steps=2000,
         reward_threshold=6000.0,
         nondeterministic=True,
         kwargs={'policy': policy}

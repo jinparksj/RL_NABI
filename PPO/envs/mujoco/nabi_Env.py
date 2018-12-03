@@ -88,7 +88,7 @@ class NabiEnv(MujocoEnv, utils.EzPickle):
 
         # xml_path = os.path.dirname(
         #     os.path.abspath(__file__)) + '/envs/model/past_NABI-v0.xml'  # NEED TO MODIFY XML FILE NAME
-        xml_path = '/home/jin/project/rlnabi/PPO/envs/model/Nabi-v1.xml'
+        xml_path = '/home/jin/project/rlnabi/PPO/envs/model/Nabi-v0.xml'
         # xml_path = '/home/jin/project/rlnabi/PPO/envs/model/Nabi-v1_jump.xml'
         frame_skip = 1
         MujocoEnv.__init__(self, xml_path, frame_skip)  # frame skip : 5, Initialize self
@@ -210,7 +210,7 @@ class NabiEnv(MujocoEnv, utils.EzPickle):
         yposafter = self.get_body_com("base_link")[1]
         zposafter = self.get_body_com("base_link")[2]
 
-        forward_reward = (xposafter - xposbefore) / self.dt
+        forward_reward = 10 * (xposafter - xposbefore) / self.dt
         not_y_reward = 10 * (yposafter - yposbefore) / self.dt
         not_x_reward = 10 * (xposafter - xposbefore) / self.dt
         jump_reward = (zposafter - zposbefore) / self.dt
@@ -221,7 +221,7 @@ class NabiEnv(MujocoEnv, utils.EzPickle):
         # cfrc_ext: com-based external force on body         (nbody x 6)
         # 3D rot; 3D tran, External torques and forces
         weighting = 0.0008
-        survive_reward = 5.
+        survive_reward = 3.
         # reward = forward_reward - ctrl_cost + survive_reward - 10 * not_y_reward - weighting * actuator_cost
         reward = forward_reward + survive_reward - not_y_reward - weighting * actuator_cost
         # reward = jump_reward - ctrl_cost + survive_reward - not_y_reward - not_x_reward
